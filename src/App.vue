@@ -8,6 +8,9 @@
 <script type="text/ecmascript-6">
 import Fooder from './components/Footer/Fooder.vue'
   export default {
+   async mounted() {
+      this.$store.dispatch('getAddress')
+    },
     components:{
       Fooder
     }
