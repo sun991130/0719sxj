@@ -11,15 +11,22 @@
   </Header>
   <!--首页导航-->
   <nav class="msite_nav">
-    <div class="swiper-container">
+    <div ref="sc1" class="swiper-container">
       <div class="swiper-wrapper">
         <div class="swiper-slide" v-for="(shop, index) in shops1" :key="index">
-          <div class="link_to_food" v-for="(a, index) in shop" :key="index">
+          <div  v-if="shops.length>0" class="link_to_food" v-for="(a, index) in shop" :key="index">
             <div class="food_container">
               <img :src="'https://fuss10.elemecdn.com' + a.image_url">
             </div>
             <span>{{a.title}}</span>
           </div>
+            <div v-else class="link_to_food" v-for="(a, index) in shop" :key="index">
+            <div class="food_container">
+              <img src="./images/msite_back.svg" alt="loading">
+            </div>
+            <span>{{a.title}}</span>
+          </div>
+          
         </div>
         </div>
       <!-- Add Pagination -->
@@ -33,7 +40,7 @@
       <span class="categorys_header_title">附近商家</span>
     </div>
     <div class="categorys_container">
-      <ul class="categorys_list">
+      <ul class="categorys_list" v-if='categorys.length>0'>
         <li class="categorys_li border-1px" v-for="categorys in categorys" :key="categorys.id">
             <a>
               <div class="categorys_left">
@@ -77,6 +84,20 @@
             </a>
           </li>
       </ul>
+      <ul v-else>
+           <li>
+            <img src="./images/shop_back.svg" alt="loading">
+          </li>
+          <li>
+            <img src="./images/shop_back.svg" alt="loading">
+          </li>
+          <li>
+            <img src="./images/shop_back.svg" alt="loading">
+          </li>
+          <li>
+            <img src="./images/shop_back.svg" alt="loading">
+          </li>
+      </ul>
     </div>
     </div>
   </section>
@@ -98,14 +119,14 @@
     },
     async mounted() {
       
-     await this.$store.dispatch('getFoods')
       this.$store.dispatch('getshops')
-    new Swiper('.swiper-container',{
-      loop: true,
-      pagination: {
-      el: '.swiper-pagination',
-       },
-    })
+      await this.$store.dispatch('getFoods')
+        new Swiper(this.$refs.sc1,{
+          loop: true,
+          pagination: {
+          el: '.swiper-pagination',
+          },
+        })
   }
   }
 </script>
