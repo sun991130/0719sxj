@@ -11,3 +11,15 @@ export const reqFood = ()=> ajax(`/index_category`)
 
 //店家分类列表
 export const reqShops = ({longitude, latitude}) => ajax('/shops', {params: {longitude, latitude}})
+
+//发送短信验证码
+export const reqmsm = (phone) => ajax('/sendcode', {params: {phone}})
+
+
+//用户名密码验证登录
+export const reqPwdLogin = ({name, pwd, captcha}) => ajax.post('/login_pwd', {name, pwd, captcha})
+
+
+//手机验证码登录
+export const reqPhone = ({phone,code}) => ajax.post('/login_sms', {phone,code})
+

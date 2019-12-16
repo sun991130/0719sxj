@@ -12,13 +12,15 @@
         <form>
           <div :class="{on:isShowmsm}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
-              <button :disabled="!isRightPhone" class="get_verification" 
+              <input type="tel" maxlength="11" placeholder="手机号" name="phone" v-model="phone" v-validate="'required|mobile'">
+              <button :disabled="!isRightPhone || settime > 0" class="get_verification" 
               :class="{right_phone_number : isRightPhone}"  @click.prevent="sendClick"
-              >获取验证码</button>
+              >{{settime > 0 ? `短信已发送${settime}s` : '发送验证码'}}</button>
+              <span style="color: red;" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input v-model="code" type="tel" maxlength="8" placeholder="验证码" name = "code" v-validate="{required: true,regex: /^\d{6}$/}">
+              <span style="color: red;" v-show="errors.has('code')">{{ errors.first('code') }}</span>
             </section>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -28,25 +30,36 @@
           <div :class="{on:!isShowmsm}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                <input v-model="name" type="tel" maxlength="11" placeholder="手机/邮箱/用户名"
+                 name="name" v-validate="'required'">
+                <span style="color: red;" v-show="errors.has('name')">{{ errors.first('name') }}</span>
               </section>
               <section class="login_verification">
-                <input :type="passWordSend ? 'text' : 'password'" maxlength="8" placeholder="密码">
+                <input v-model="pwd" :type="passWordSend ? 'text' : 'password'" maxlength="8" placeholder="密码"
+                 name="pwd" v-validate="'required'">
                 <div class="switch_button" :class="passWordSend ? 'on' : 'off' " 
                 @click="passWordSend = !passWordSend">
                   <div class="switch_circle" :class="{right:passWordSend}"></div>
                   <span class="switch_text">{{passWordSend ? 'abc' : ''}}</span>
                 </div>
+                <span style="color: red;" v-show="errors.has('pwd')">{{ errors.first('pwd') }}</span>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <input v-model="captcha" type="text" maxlength="11" placeholder="验证码"
+                 name="captcha" v-validate="{required: true,regex: /^[0-9a-zA-Z]{4}$/}">
+                <!-- <img class="get_verification" src="./images/captcha.svg" alt="captcha"> -->
+                 <img class="get_verification" src="http://localhost:4000/captcha" 
+                  alt="captcha" @click="updateCaptcha" ref="captcha">
+                 <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
               </section>
             </section>
           </div>
-          <button class="login_submit">登录</button>
+           <button class="login_submit" @click.prevent="login">登录</button>
         </form>
-        <a href="javascript:;" class="about_us">关于我们</a>
+        <a href="javascript:;" class="about_us">{{$t('login_aboutUs')}}</a>
+
+        <br>
+        <button class="login_submit" @click.prevent="toggleLocale">切换语言</button>
       </div>
       <a href="javascript:" class="go_back" @click="$router.back()">
         <i class="iconfont icon-jiantou2"></i>
@@ -56,7 +69,7 @@
 </template>
 
 <script type="text/ecmascript-6">
- import VeeValidate from 'vee-validate'
+  import {Toast, MessageBox} from 'mint-ui'
   export default {
 
 
@@ -66,10 +79,13 @@
         isShowmsm : true,
         phone:'',
         passWordSend: false,
+        code: '', // 短信验证码
+        name: '', // 用户名
+        pwd: '', // 密码
+        captcha: '', // 图形验证码
+        settime: 0, // 计时剩余时间
 
-        use:'', //用户
-        psd:'', //密码
-        imagess:''  //图片
+
       }
     },
      computed: {
@@ -78,12 +94,95 @@
         return /^1\d{10}$/.test(this.phone)
       }
     },
-
+      
     methods: {
-      sendClick(){
-        alert('------')
+      async sendClick(){
+        //验证码倒计时
+        this.settime = 10
+        const intervalId = setInterval(() => {
+          this.settime--
+          if(this.settime === 0){
+            clearInterval(intervalId)
+          }
+        },1000);
+
+         const result = await this.$API.reqmsm(this.phone)
+         
+         if(result.code === 0){
+          Toast('验证码发送成功')
+         }else{
+            
+           MessageBox('提示','验证码发送失败')
+           this.settime = 0
+           clearInterval(intervalId)
+         }
+      },
+
+      async login () {
+        // 进行前台表单验证
+        let names
+        if (this.isShowmsm) {
+          names = ['phone', 'code']
+        } else {
+          names = ['name', 'pwd', 'captcha']
+        }
+
+        const success = await this.$validator.validateAll(names) // 对指定的所有表单项进行验证
+
+        //登录
+        let result 
+        if(success){
+          let {isShowmsm,phone,code,name,pwd,captcha} = this
+          if(isShowmsm){
+           result = await this.$API.reqPhone({phone,code})
+          }else{
+              result = await this.$API.reqPwdLogin({name,pwd,captcha})
+                this.updateCaptcha()
+               this.captcha =''
+          }
+
+          if(result.code === 0){
+            const user = result.data
+            console.log(user)
+            // this.$store.dispatch('saveUser', user)
+            this.$router.replace({path:'/profile'})
+          }else {
+            MessageBox('提示', result.msg)
+          }
+        }
+
+        
+         
+
+      },
+        
+
+
+
+
+
+
+       updateCaptcha () {
+        this.$refs.captcha.src = 'http://localhost:4000/captcha?time=' + Date.now()
+      },
+
+
+
+      //语言
+      toggleLocale () {
+        // 根据当前的locale确定新的locale
+        const locale = this.$i18n.locale === 'en' ? 'zh_CN' : 'en'
+        // 指定新的locale
+        this.$i18n.locale = locale
+        // 保存新的locale
+        localStorage.setItem('locale_key', locale)
       }
-    },
+    }
+
+
+    
+
+    
   }
 </script>
 

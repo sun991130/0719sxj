@@ -12,4 +12,7 @@ export default{
   categorys:[],
   //商家列表
   shops:[],
+  user:{},
+  tokon : localStorage.getItem('token_key')
+  
 }

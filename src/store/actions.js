@@ -1,5 +1,5 @@
-import {reqAddress,reqFood,reqShops} from '@/axios'
-import {AJAX_ADDRESS,AJAX_SHOPS,AJAX_FOODS} from './mutations_Type'
+import {reqAddress,reqFood,reqShops,reqPwdLogin} from '@/axios'
+import {AJAX_ADDRESS,AJAX_SHOPS,AJAX_FOODS,APP_USER,APP_TOKON} from './mutations_Type'
 
 
 export default{
@@ -23,6 +23,22 @@ export default{
   async getshops({commit,state}){
     const {longitude, latitude} = state
     const result = await reqShops({longitude, latitude})
+    if(result.code ===0){
+      const shops = result.data
+      commit(AJAX_FOODS,shops)
+    }
+  },
+  async getshops({commit,state}){
+    const {longitude, latitude} = state
+    const result = await reqShops({longitude, latitude})
+    if(result.code ===0){
+      const shops = result.data
+      commit(AJAX_FOODS,shops)
+    }
+  },
+  getuser({commit},user){
+    const tokon = state
+    localStorage.getItem('token_key')
     if(result.code ===0){
       const shops = result.data
       commit(AJAX_FOODS,shops)
