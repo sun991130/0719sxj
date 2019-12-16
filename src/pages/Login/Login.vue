@@ -56,7 +56,11 @@
 </template>
 
 <script type="text/ecmascript-6">
+ import VeeValidate from 'vee-validate'
   export default {
+
+
+    
     data() {
       return {
         isShowmsm : true,
@@ -68,10 +72,7 @@
         imagess:''  //图片
       }
     },
-
      computed: {
-
-
       // 是否是一个正确的手机号
       isRightPhone () {
         return /^1\d{10}$/.test(this.phone)

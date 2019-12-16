@@ -11,27 +11,21 @@
   </Header>
   <!--首页导航-->
   <nav class="msite_nav">
-    <div ref="sc1" class="swiper-container">
+    <div ref="sc1" class="swiper-container" v-if="shops.length>0">
       <div class="swiper-wrapper">
         <div class="swiper-slide" v-for="(shop, index) in shops1" :key="index">
-          <div  v-if="shops.length>0" class="link_to_food" v-for="(a, index) in shop" :key="index">
+          <div class="link_to_food" v-for="(a, index) in shop" :key="index">
             <div class="food_container">
               <img :src="'https://fuss10.elemecdn.com' + a.image_url">
             </div>
             <span>{{a.title}}</span>
-          </div>
-            <div v-else class="link_to_food" v-for="(a, index) in shop" :key="index">
-            <div class="food_container">
-              <img src="./images/msite_back.svg" alt="loading">
-            </div>
-            <span>{{a.title}}</span>
-          </div>
-          
+          </div>          
         </div>
         </div>
       <!-- Add Pagination -->
        <div class="swiper-pagination"></div>
     </div>
+    <div v-else><img src="./images/msite_back.svg" alt=""></div>
   </nav>
   <!--首页附近商家-->
   <div class="msite_categorys_list">
