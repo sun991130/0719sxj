@@ -7,9 +7,12 @@ import store from './store/index'
 import * as API from './axios/index'
 import i18n from './i18n'
 import './validate'
+//全局注册mint-ui的button
+import {Button} from 'mint-ui'
 
 Vue.prototype.$API = API
 Vue.component('Header',Header)
+Vue.component(Button.name,Button)
 
 new Vue({
   render: h => h(App),

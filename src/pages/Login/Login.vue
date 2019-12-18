@@ -48,7 +48,7 @@
                 <input v-model="captcha" type="text" maxlength="11" placeholder="验证码"
                  name="captcha" v-validate="{required: true,regex: /^[0-9a-zA-Z]{4}$/}">
                 <!-- <img class="get_verification" src="./images/captcha.svg" alt="captcha"> -->
-                 <img class="get_verification" src="http://localhost:4000/captcha" 
+                 <img class="get_verification" src="/api/captcha" 
                   alt="captcha" @click="updateCaptcha" ref="captcha">
                  <span style="color: red;" v-show="errors.has('captcha')">{{ errors.first('captcha') }}</span>
               </section>
@@ -61,7 +61,7 @@
         <br>
         <button class="login_submit" @click.prevent="toggleLocale">切换语言</button>
       </div>
-      <a href="javascript:" class="go_back" @click="$router.back()">
+      <a href="javascript:" class="go_back" @click="$router.replace('/profile')">
         <i class="iconfont icon-jiantou2"></i>
       </a>
     </div>
@@ -144,7 +144,7 @@
           if(result.code === 0){
             const user = result.data
             console.log(user)
-            // this.$store.dispatch('saveUser', user)
+            this.$store.dispatch('getuser', user)
             this.$router.replace({path:'/profile'})
           }else {
             MessageBox('提示', result.msg)
@@ -163,7 +163,7 @@
 
 
        updateCaptcha () {
-        this.$refs.captcha.src = 'http://localhost:4000/captcha?time=' + Date.now()
+        this.$refs.captcha.src = '/api/captcha?time=' + Date.now()
       },
 
 

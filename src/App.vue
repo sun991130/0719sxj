@@ -10,6 +10,7 @@ import Fooder from './components/Footer/Fooder.vue'
   export default {
    async mounted() {
       this.$store.dispatch('getAddress')
+      this.$store.dispatch('getToko')
     },
     components:{
       Fooder

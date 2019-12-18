@@ -3,7 +3,9 @@
 
 import axios from 'axios'
 import qs from 'qs'
-import { Indicator } from 'mint-ui';
+import { Indicator, Toast, MessageBox } from 'mint-ui'
+import store from '@/store/index.js'
+import router from '@/router/index.js'
 
 //axios里面有个实例对象 也是一个函数 create
 const instance = axios.create({
@@ -24,6 +26,24 @@ instance.interceptors.request.use((config) => {
     config.data = qs.stringify(data)
   }
 
+  //5.获取tokon的值
+  const token = store.state.token
+
+  //如果当前接口需要token校验,但是没有token,不发请求,进入错误流程
+    if(token){
+    //如果有token 则吧 token添加到请求头去
+      config.headers['Authorization'] = token
+    }else {
+    //如果没有tokon则直接进入错误的回调
+      const needCheck = config.headers.needCheck
+    if(needCheck){
+      throw new Error('没有登录,不能请求')
+    }
+    }
+
+
+
+
   return config
 
 })
@@ -43,11 +63,40 @@ instance.interceptors.response.use(
   },
   //失败的回调
   error =>{
+    
     Indicator.close()
+    
+    const response = error.response
+    //没法请求的错误
+      if(!response){
+        const path = router.currentRoute.path
+        if (path!=='/login') {
+          // console.log('+++++++')
+          router.replace('/login')
+          Toast(error.message)
+        }
+      }else{
+        if (error.response.status===401) {
+          const path = router.currentRoute.path
+          if (path!=='/login') {
+            // console.log('-----------')
+            store.dispatch('getOut')
+            router.replace('/login')
+            Toast(error.response.data.message || '登陆失效, 请重新登陆')
+          }
+        } else if (error.response.status===404) { // status为: 404: 提示访问的资源不存在
+          MessageBox('提示', '访问的资源不存在')
+        } else {
+          // 1. 统一处理请求异常
+          MessageBox('提示', '请求出错: ' + error.message)
+        }
+      }
+    //隐藏请求loading
+
     // return Promise.reject(error)
     //统一处理异常
-    alert('请求出错' + error.message)
-    return new Promise( () =>{})
+    // alert('请求出错' + error.message)
+    // return new Promise( () =>{})
   }
 )
 

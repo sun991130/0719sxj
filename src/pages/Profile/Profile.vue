@@ -2,7 +2,7 @@
   <div>
     <section class="profile">
       <Header title="个人中心"/>
-      <section class="profile-number" @click="$router.push(user._id ? '/info' : '/login')">
+      <section class="profile-number" @click="$router.push(user._id ? '/userInfo' : '/login')">
         <a href="javascript:" class="profile-link">
           <div class="profile_image">
             <i class="iconfont icon-person"></i>
@@ -89,16 +89,42 @@
           </div>
         </a>
       </section>
+         <section class="profile_my_order border-1px" v-show="user._id">
+          <mt-button style="width: 100%" type="danger" @click="getOut">退出登陆</mt-button>
+        </section >
+
     </section>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
 import {mapState} from 'vuex'
+import {MessageBox} from 'mint-ui'
   export default {
     computed:{
-      ...mapState(['user'])
-    }
+      ...mapState(['user']),
+
+
+    },
+     methods: {
+       getOut(){
+          MessageBox.confirm('你确定要退出吗?')
+          
+          .then(
+            //确定退出
+            ()=> {
+            this.$router.replace({path:'/login'})
+            this.$store.dispatch('getOut')
+            },
+            //取消退出
+            () =>{
+              alert('你点击了取消')
+            }
+            
+                    
+          )
+        }
+     },
   }
 </script>
 
