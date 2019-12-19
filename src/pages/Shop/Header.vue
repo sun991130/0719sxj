@@ -1,8 +1,8 @@
 <template>
   <div class="shop-header">
     <nav class="shop-nav"
-         style="background-image: url('https://fuss10.elemecdn.com/f/5c/ead54394c3de198d3e6d3e9111bbfpng.png');">
-      <a class="back">
+         :style="{backgroundImage: `url(${info.bgImg})`}">
+      <a class="back" @click="$router.replace('/msite')">
         <i class="iconfont icon-arrow_left"/>
       </a>
     </nav>
