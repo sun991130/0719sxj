@@ -63,7 +63,7 @@ instance.interceptors.response.use(
   },
   //失败的回调
   error =>{
-    
+     //隐藏请求loading
     Indicator.close()
     
     const response = error.response
@@ -91,12 +91,15 @@ instance.interceptors.response.use(
           MessageBox('提示', '请求出错: ' + error.message)
         }
       }
-    //隐藏请求loading
+   
+
 
     // return Promise.reject(error)
     //统一处理异常
     // alert('请求出错' + error.message)
-    // return new Promise( () =>{})
+
+    //// 返回一个pending状态的promise => 中断promie链  防止错误传递下去
+    return new Promise( () =>{})
   }
 )
 

@@ -35,7 +35,7 @@
     </div>
     <div class="categorys_container">
       <ul class="categorys_list" v-if='categorys.length>0'>
-        <li class="categorys_li border-1px" v-for="categorys in categorys" :key="categorys.id">
+        <li class="categorys_li border-1px" v-for="categorys in categorys" :key="categorys.id" @click="$router.push('/shop')">
             <a>
               <div class="categorys_left">
                 <img class="categorys_img" :src="'https://fuss10.elemecdn.com' + categorys.image_path">

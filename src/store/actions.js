@@ -1,5 +1,7 @@
-import {reqAddress,reqFood,reqShops,reqtoko} from '@/axios'
-import {AJAX_ADDRESS,AJAX_SHOPS,AJAX_FOODS,APP_USER,APP_TOKON,CLEAR_TOKON,CLEAR_USER} from './mutations_Type'
+import {reqAddress,reqFood,reqShops,reqtoko,reqInfo,reqGoods,reqRatings} from '@/axios'
+import {AJAX_ADDRESS,AJAX_SHOPS,AJAX_FOODS,APP_USER,APP_TOKON,CLEAR_TOKON,CLEAR_USER
+,SHOP_GOODS,SHOP_RATINGS,SHOP_INFO
+} from './mutations_Type'
 
 
 export default{
@@ -13,6 +15,7 @@ export default{
       commit(AJAX_ADDRESS,address)
     }
   },
+
   async getFoods({commit}){
     const result = await reqFood()
     if(result.code ===0){
@@ -20,6 +23,7 @@ export default{
       commit(AJAX_SHOPS,food)
     }
   },
+
   async getshops({commit,state}){
     const {longitude, latitude} = state
     const result = await reqShops({longitude, latitude})
@@ -69,9 +73,42 @@ export default{
         }
 
     }
+  },
 
+  //商品列表
 
-      
-      
-  }
+  // 异步获取商家信息
+  async getShopInfo({commit}, cb) {
+    const result = await reqInfo()
+    if(result.code===0) {
+      const info = result.data
+      info.score = 3.5
+      commit(SHOP_INFO, {info})
+
+      cb && cb()
+    }
+  },
+
+  // 异步获取商家评价列表
+  async getShopRatings({commit}, cb) {
+    const result = await reqRatings()
+    if(result.code===0) {
+      const ratings = result.data
+      commit(SHOP_RATINGS, {ratings})
+
+      cb && cb()
+    }
+  },
+
+  // 异步获取商家商品列表
+  async getShopGoods({commit}, cb) {
+    const result = await reqGoods()
+    if(result.code===0) {
+      const goods = result.data
+      commit(SHOP_GOODS, {goods})
+      // 如果组件中传递了接收消息的回调函数, 数据更新后, 调用回调通知调用的组件
+      cb && cb()
+    }
+  },
+
 }

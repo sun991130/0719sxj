@@ -36,3 +36,21 @@ export const reqPhone = ({phone,code}) => ajax.post('/login_sms', {phone,code})
 
 //自动登录
 export const reqtoko = () => ajax.get('/auto_login')
+
+
+
+/**
+ * 获取商家信息
+ */
+export const reqInfo = () => ajax('/info')
+
+/**
+ * 获取商家评价数组
+ */
+export const reqRatings = () => ajax('/ratings')
+
+/**
+ * 获取商家商品数组
+ */
+export const reqGoods = () => ajax('/goods')
+
