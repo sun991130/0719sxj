@@ -27,7 +27,7 @@ instance.interceptors.request.use((config) => {
   }
 
   //5.获取tokon的值
-  const token = store.state.token
+  const token = store.state.user.token
 
   //如果当前接口需要token校验,但是没有token,不发请求,进入错误流程
     if(token){

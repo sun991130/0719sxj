@@ -11,3 +11,7 @@ export const CLEAR_USER = 'clearuser'
 export const SHOP_GOODS = 'shopgoods'
 export const SHOP_INFO = 'shopinfo'
 export const SHOP_RATINGS = 'shopratings'
+
+//更新food中的常量
+export const ADD_COUNT ='add_count' //增加
+export const DEL_COUNT ='del_count' //减少
